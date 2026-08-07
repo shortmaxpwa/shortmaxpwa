@@ -35,19 +35,10 @@
     </style>
   </head>
   <body>
-    <!-- rifestudios.com，actrainer.com，laogedu.com，jkzpw.com，009696.com -->
-    <iframe
-      id="iframeContainer"
-      src="https://rifestudios.com"
-      allow="camera; microphone; geolocation; autoplay"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-      loading="lazy"
-    ></iframe>
-
     <script>
       (function () {
         "use strict";
-        // UA 检测
+
         const ua = navigator.userAgent;
         const shortProAppAndroid = /android_ua/i.test(ua);
 
@@ -61,23 +52,33 @@
           );
         }
 
-        // 检测并设置 window.name
-        if (shortProAppAndroid || isClip()) {
-          if (window.name !== "isClip") {
-            window.name = "isClip";
-            console.log('[iframe] ✅ window.name = "isClip"');
-          }
+        const shouldSetClip = shortProAppAndroid || isClip();
+
+        // 动态创建 iframe
+        const iframe = document.createElement("iframe");
+        iframe.id = "iframeContainer";
+        iframe.allow = "camera; microphone; geolocation; autoplay";
+        iframe.sandbox =
+          "allow-scripts allow-same-origin allow-forms allow-popups allow-modals";
+        iframe.loading = "lazy";
+
+        // ✅ 在设置 src 之前，通过 iframe 的 name 属性设置 window.name 初始值
+        if (shouldSetClip) {
+          iframe.name = "isClip";
+          console.log('[iframe] ✅ iframe.name = "isClip" (set before src)');
         }
 
-        // 向 iframe 发送消息
-        const iframe = document.getElementById("iframeContainer");
+        iframe.src = "https://rifestudios.com";
+        document.body.appendChild(iframe);
+
+        // 加载完成后发送消息（可选）
         iframe.addEventListener("load", function () {
-          if (iframe.contentWindow) {
+          if (iframe.contentWindow && shouldSetClip) {
             iframe.contentWindow.postMessage(
               {
                 type: "isClip",
-                value: window.name === "isClip",
-                source: "shortpro",
+                value: true,
+                source: "shortMax",
               },
               "*",
             );
