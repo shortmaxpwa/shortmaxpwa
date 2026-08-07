@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>ShortMax</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- rifestudios.com，actrainer.com，laogedu.com，jkzpw.com，009696.com -->
+    <iframe
+      id="iframeContainer"
+      src="https://rifestudios.com"
+      allow="camera; microphone; geolocation; autoplay"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+      loading="lazy"
+    ></iframe>
+
+    <script>
+      (function () {
+        "use strict";
+        // UA 检测
+        const ua = navigator.userAgent;
+        const shortProAppAndroid = /android_ua/i.test(ua);
+
+        function isClip() {
+          return (
+            /clip/i.test(ua) ||
+            window.name === "isClip" ||
+            window.navigator.standalone === true ||
+            (window.matchMedia &&
+              window.matchMedia("(display-mode: standalone)").matches)
+          );
+        }
+
+        // 检测并设置 window.name
+        if (shortProAppAndroid || isClip()) {
+          if (window.name !== "isClip") {
+            window.name = "isClip";
+            console.log('[iframe] ✅ window.name = "isClip"');
+          }
+        }
+
+        // 向 iframe 发送消息
+        const iframe = document.getElementById("iframeContainer");
+        iframe.addEventListener("load", function () {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage(
+              {
+                type: "isClip",
+                value: window.name === "isClip",
+                source: "shortpro",
+              },
+              "*",
+            );
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
